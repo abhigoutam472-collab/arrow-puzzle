@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Arrow Puzzle</title>
+<style>
+:root{color-scheme:light;--bg:#e9edf5;--fg:#0f1b3d;--card:#fff;--ac:#1e88ff;--bad:#e53935;--mut:#6b7691;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+body{display:flex;flex-direction:column;overflow:hidden}
+#gv,#me{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;gap:14px;padding:12px 12px 20px}
+#me{align-items:stretch}
+.top{width:min(94vw,520px);display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:19px}
+.card{background:var(--card);border-radius:20px;padding:8px;width:min(94vw,520px);aspect-ratio:1;box-sizing:border-box;box-shadow:0 4px 16px rgba(30,50,100,.10)}
+svg{width:100%;height:100%;display:block;touch-action:none;-webkit-user-select:none;user-select:none}
+#gv{overscroll-behavior:none}
+.btns{display:flex;gap:10px}
+button{font:inherit;font-weight:600;background:var(--ac);color:#fff;border:0;border-radius:999px;padding:12px 22px;transition:transform .12s}
+button:active{transform:scale(.95)}
+button.alt{background:var(--card);color:var(--fg);box-shadow:0 2px 8px rgba(30,50,100,.15)}
+small{color:var(--mut);text-align:center}
+nav{display:flex;background:var(--card);border-top:1px solid #dde3ef;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;color:var(--mut);border-radius:0;padding:10px 0 8px;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:22px}
+nav button.on{color:var(--ac)}
+.row{background:var(--card);border-radius:16px;padding:16px 18px;font-size:17px;display:flex;justify-content:space-between;margin:0 4px;box-shadow:0 1px 4px rgba(30,50,100,.08)}
+.row:active{background:#f1f4fa}
+h3{margin:6px 6px}
+#ov,#pg{position:fixed;inset:0;display:none;z-index:5}
+#ov{background:rgba(15,27,61,.45);align-items:center;justify-content:center;overflow:hidden}
+#ov .bx{background:var(--card);border-radius:24px;padding:28px 34px;text-align:center;display:flex;flex-direction:column;gap:12px;min-width:240px;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+#ov h2{margin:0;font-size:30px}
+.st{font-size:34px;letter-spacing:4px}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg)}}
+.cf{position:absolute;top:-20px;width:10px;height:14px;border-radius:2px;animation:fall linear forwards}
+#pg{background:var(--bg);flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#pg header{display:flex;align-items:center;gap:10px;padding:14px;background:var(--card);font-weight:700;font-size:19px}
+#pg header b{color:var(--ac);font-size:26px;cursor:pointer;padding:0 8px}
+#pb{padding:16px;overflow:auto;line-height:1.55;font-size:15.5px;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))}
+#pb ul{padding-left:20px}
+[hidden]{display:none!important}
+#hv{flex:1;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:20px;text-align:center}
+#hv h1{margin:0;font-size:32px}
+.play{background:var(--ac);color:#fff;border-radius:999px;padding:18px 44px;font-size:22px;display:flex;flex-direction:column;align-items:center;line-height:1.25;box-shadow:0 8px 20px rgba(30,136,255,.35)}
+.play small{color:#d6e9ff;font-weight:500;font-size:17px}
+.back{background:none;color:var(--ac);padding:4px 6px;font-size:18px;box-shadow:none}
+#wn{position:fixed;inset:0;display:none;z-index:6;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(56px + env(safe-area-inset-top,0px)) 24px calc(28px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:repeating-conic-gradient(from 0deg at 50% 45%,#1e88ff 0 8deg,#3aa3ff 8deg 16deg);color:#fff;text-align:center;overflow:hidden}
+#wn h2{margin:0;font-size:38px}
+#wn .pf{font-size:21px;margin-top:8px;font-weight:600}
+#wn .pv{background:#fff;border-radius:28px;width:min(66vw,300px);aspect-ratio:1;padding:14px;box-sizing:border-box;box-shadow:0 18px 40px rgba(0,40,120,.3);animation:pop .5s cubic-bezier(.2,1.4,.4,1)}
+#wn .nx{background:#fff;color:#1e6fe0;width:100%;max-width:420px;border-radius:999px;padding:16px;font-size:23px;display:flex;flex-direction:column;align-items:center;line-height:1.25}
+#wn .nx small{color:#6fa8ef;font-weight:500;font-size:18px}
+#wn .mn{background:none;color:#fff;font-size:22px;box-shadow:none}
+.prof{background:var(--card);border-radius:20px;padding:16px 18px;margin:0 4px;display:flex;align-items:center;gap:14px;box-shadow:0 1px 4px rgba(30,50,100,.08)}
+.av{width:56px;height:56px;border-radius:50%;background:#dbe9ff;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:var(--ac);flex:none}
+.prof b{font-size:20px}
+#gv{background:#fff;justify-content:flex-start;gap:12px}
+.gh{width:min(94vw,520px);display:flex;align-items:center;justify-content:space-between}
+.gh .back{font-size:36px;padding:0 10px;line-height:1}
+.lt{font-weight:700;font-size:25px;text-align:center}
+.ls{color:var(--mut);text-align:center;font-size:17px}
+.hr{width:min(94vw,520px);display:flex;align-items:center;gap:14px;font-size:24px;white-space:nowrap}
+.prg{flex:1;height:14px;background:#dde3ef;border-radius:99px;overflow:hidden}
+.prg i{display:block;height:100%;width:0;background:var(--ac);border-radius:99px;transition:width .4s}
+.bw{width:min(90vw,480px);aspect-ratio:1;margin:auto 0}
+.tools{display:flex;gap:44px;padding:6px 0 14px}
+.tl{position:relative;width:70px;height:70px;border-radius:50%;background:#fff;color:var(--fg);font-size:30px;padding:0;box-shadow:0 4px 14px rgba(30,50,100,.22)}
+.tl b{position:absolute;top:-4px;right:-4px;background:var(--ac);color:#fff;border-radius:50%;width:28px;height:28px;font-size:16px;line-height:28px}
+.tl.on{background:#dbe9ff}
+</style>
+</head>
+<body>
+<div id="hv"><div style="font-size:64px">🏹</div><h1>Arrow Puzzle</h1><div id="hg" style="font-size:20px"></div><button class="play" id="hp2"></button><small id="hs"></small></div>
+<div id="gv" hidden>
+ <div class="gh"><button class="back" id="bk">‹</button><div><div id="lv" class="lt"></div><div id="df" class="ls"></div></div><button class="back" id="gs">⚙️</button></div>
+ <div class="hr"><span id="hp"></span><div class="prg"><i id="pbar"></i></div></div>
+ <div class="bw"><svg id="bd" viewBox="0 0 6 6"></svg></div>
+ <div class="tools"><button class="tl" id="hint">💡<b id="hb">3</b></button><button class="tl" id="rl">📏</button></div>
+</div>
+<div id="me" hidden>
+ <h3>Me</h3>
+ <div class="prof" id="pf"></div>
+ <div class="row" data-p="awards">🏆 Awards &amp; Achievements <span>›</span></div>
+ <div class="row" data-p="settings">⚙️ Settings <span>›</span></div>
+ <div class="row" data-p="help">❓ Help <span>›</span></div>
+ <div class="row" data-p="about">ℹ️ About Game <span>›</span></div>
+ <div class="row" data-p="share">🔗 Game link copy / share <span>›</span></div>
+ <div class="row" data-p="privacy">🔒 Privacy Policy <span>›</span></div>
+ <div class="row" data-p="terms">📄 Terms of Service <span>›</span></div>
+ <div class="row" data-p="pref">🛡️ Privacy Preferences <span>›</span></div>
+</div>
+<nav>
+ <button id="n0" class="on"><span>🏠</span>Main</button>
+ <button id="n1"><span>📅</span>Daily</button>
+ <button id="n2"><span>👤</span>Me</button>
+</nav>
+<div id="wn"><div><h2>Level Completed!</h2><div class="pf" id="wm"></div><div class="st" id="ws"></div></div><div class="pv"><svg id="mini" viewBox="0 0 6 6" style="width:100%;height:100%"></svg></div><div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:10px"><button class="nx" id="wb"></button><button class="mn" id="wh">Main</button></div></div>
+<div id="ov"><div class="bx"><h2 id="ot"></h2><div class="st" id="os"></div><p id="om" style="margin:0;color:var(--mut)"></p><button id="ob">OK</button></div></div>
+<div id="pg"><header><b id="pbk">‹</b><span id="pt"></span></header><div id="pb"></div></div>
+<script>
+const D=[[0,-1],[1,0],[0,1],[-1,0]],$=id=>document.getElementById(id),svg=$("bd"),NS="http://www.w3.org/2000/svg";
+let S={name:"",level:1,done:0,perfect:0,sound:true,vib:true,grid:true,daily:""};
+try{Object.assign(S,JSON.parse(localStorage.getItem("ap2")||"{}"))}catch(e){}
+const save=()=>{try{localStorage.setItem("ap2",JSON.stringify(S))}catch(e){}};
+let orig=[],mode="lvl",n=6,lives=3,hints=3,arrows=[],busy=false,rnd=Math.random,ac=null;
+const today=()=>new Date().toISOString().slice(0,10);
+function seeded(s){let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))|0;return()=>{h|=0;h=h+0x6D2B79F5|0;let t=Math.imul(h^h>>>15,1|h);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function tone(f,d){if(!S.sound)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();const o=ac.createOscillator(),g=ac.createGain();o.frequency.value=f;g.gain.value=.2;o.connect(g);g.connect(ac.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
+function vib(p){if(S.vib&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function isFree(ar,alive){let[x,y]=ar.path[ar.path.length-1];const[dx,dy]=D[ar.dir];x+=dx;y+=dy;
+ while(x>=0&&y>=0&&x<n&&y<n){for(const o of alive){if(o!==ar&&o.path.some(p=>p[0]===x&&p[1]===y))return false}x+=dx;y+=dy}return true}
+function stuck(a){let alive=[...a],f;while(f=alive.find(r=>isFree(r,alive)))alive=alive.filter(r=>r!==f);return alive}
+function gen(){
+ const occ=Array.from({length:n},()=>Array(n).fill(false)),a=[],cells=[];
+ for(let y=0;y<n;y++)for(let x=0;x<n;x++)cells.push([x,y,Math.min(x,y,n-1-x,n-1-y)+rnd()*1.6]);
+ cells.sort((p,q)=>q[2]-p[2]);
+ for(const[sx,sy]of cells){
+  if(occ[sy][sx])continue;
+  for(let tr=0;tr<4;tr++){
+   const path=[[sx,sy]];occ[sy][sx]=true;let dir=-1;const len=2+Math.floor(rnd()*(n>10?6:5));
+   while(path.length<len){
+    const[cx,cy]=path[path.length-1];
+    const o=[0,1,2,3].filter(d=>{const nx=cx+D[d][0],ny=cy+D[d][1];return nx>=0&&ny>=0&&nx<n&&ny<n&&!occ[ny][nx]});
+    if(!o.length)break;
+    const d=(dir>=0&&o.includes(dir)&&rnd()<.5)?dir:o[Math.floor(rnd()*o.length)];
+    const nx=cx+D[d][0],ny=cy+D[d][1];path.push([nx,ny]);occ[ny][nx]=true;dir=d;
+   }
+   let ok=false;
+   while(path.length>=2){
+    const h=path[path.length-1],p=path[path.length-2],d=D.findIndex(v=>v[0]===h[0]-p[0]&&v[1]===h[1]-p[1]);
+    let x=h[0]+D[d][0],y=h[1]+D[d][1],clear=true;
+    while(x>=0&&y>=0&&x<n&&y<n){if(occ[y][x]){clear=false;break}x+=D[d][0];y+=D[d][1]}
+    if(clear){a.push({path,dir:d});ok=true;break}
+    const q=path.pop();occ[q[1]][q[0]]=false;
+   }
+   if(ok)break;
+   path.forEach(c=>{occ[c[1]][c[0]]=false});
+  }
+ }
+ return a;
+}
+function genOld(){let a;
+ for(let t=0;t<25;t++){
+  const occ=Array.from({length:n},()=>Array(n).fill(false));a=[];
+  const cells=[];for(let y=0;y<n;y++)for(let x=0;x<n;x++)cells.push([x,y]);shuffle(cells);
+  for(const[sx,sy]of cells){
+   if(occ[sy][sx])continue;
+   const path=[[sx,sy]];occ[sy][sx]=true;let dir=-1;const len=2+Math.floor(rnd()*5);
+   while(path.length<len){
+    const[cx,cy]=path[path.length-1];
+    const o=[0,1,2,3].filter(d=>{const nx=cx+D[d][0],ny=cy+D[d][1];return nx>=0&&ny>=0&&nx<n&&ny<n&&!occ[ny][nx]});
+    if(!o.length)break;
+    const d=(dir>=0&&o.includes(dir)&&rnd()<.5)?dir:o[Math.floor(rnd()*o.length)];
+    const nx=cx+D[d][0],ny=cy+D[d][1];path.push([nx,ny]);occ[ny][nx]=true;dir=d;
+   }
+   if(path.length<2){occ[sy][sx]=false;continue}
+   a.push({path,dir});
+  }
+  if(!stuck(a).length)return a;
+ }
+ const s=stuck(a);return a.filter(r=>!s.includes(r));
+}
+function el(t,at,p){const e=document.createElementNS(NS,t);for(const k in at)e.setAttribute(k,at[k]);if(p)p.appendChild(e);return e}
+function draw(){
+ svg.innerHTML="";svg.setAttribute("viewBox","0 0 "+n+" "+n);
+ if(S.grid)for(let y=0;y<n;y++)for(let x=0;x<n;x++)el("circle",{cx:x+.5,cy:y+.5,r:.04,fill:"#c9d1e4","pointer-events":"none"},svg);
+ arrows.forEach(ar=>{
+  const g=el("g",{},svg);ar.g=g;
+  const pts=ar.path.map(p=>(p[0]+.5)+","+(p[1]+.5)).join(" ");
+  ar.line=el("polyline",{points:pts,fill:"none",stroke:"#0f1b3d","stroke-width":.14,"stroke-linecap":"round","stroke-linejoin":"round"},g);
+  const[hx,hy]=ar.path[ar.path.length-1],[dx,dy]=D[ar.dir],cx=hx+.5,cy=hy+.5,px=-dy,py=dx;
+  ar.head=el("polygon",{points:[[cx+dx*.42,cy+dy*.42],[cx+dx*.02+px*.26,cy+dy*.02+py*.26],[cx+dx*.02-px*.26,cy+dy*.02-py*.26]].map(q=>q.join(",")).join(" "),fill:"#0f1b3d"},g);
+ });
+}
+svg.addEventListener("pointerdown",e=>{e.preventDefault();if(busy)return;
+ const r=svg.getBoundingClientRect(),s=n/r.width,px=(e.clientX-r.left)*s,py=(e.clientY-r.top)*s;let best=null,bd=.5;
+ for(const ar of arrows){const p=ar.path;for(let i=0;i<p.length;i++){const ax=p[i][0]+.5,ay=p[i][1]+.5;let d=Math.hypot(px-ax,py-ay);
+  if(i<p.length-1){const dx=p[i+1][0]+.5-ax,dy=p[i+1][1]+.5-ay,t=Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy)));d=Math.hypot(px-ax-t*dx,py-ay-t*dy)}
+  if(d<bd){bd=d;best=ar}}}
+ if(best)tap(best);else tone(600,.06)});
+function setColor(ar,c){ar.line.setAttribute("stroke",c);ar.head.setAttribute("fill",c)}
+function ui(){$("lv").textContent=mode==="lvl"?"Level "+S.level:"Daily Challenge";$("df").textContent=n<=9?"Normal":n<=12?"Hard":"Expert";$("hp").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);$("hb").textContent=hints;$("rl").classList.toggle("on",!!S.grid);const t=orig.length||1;$("pbar").style.width=(100*(t-arrows.length)/t)+"%"}
+function start(){
+ if(mode==="daily"){rnd=seeded("ap"+today());n=12}else{rnd=Math.random;n=Math.min(4+Math.ceil(S.level*1.2),16)}
+ lives=3;hints=3;busy=false;arrows=gen();orig=[...arrows];draw();ui();
+}
+function tap(ar){
+ if(busy||!arrows.includes(ar))return;
+ if(isFree(ar,arrows)){
+  arrows=arrows.filter(r=>r!==ar);ui();tone(520+arrows.length*6,.12);vib(15);
+  const[dx,dy]=D[ar.dir];ar.g.style.transition="transform .5s cubic-bezier(.5,0,.9,.6),opacity .5s";
+  ar.g.style.transform="translate("+dx*n+"px,"+dy*n+"px)";ar.g.style.opacity=0;
+  setTimeout(()=>ar.g.remove(),550);
+  if(!arrows.length)win();
+ }else{
+  lives--;ui();setColor(ar,"#e53935");tone(150,.25);vib([40,40,40]);
+  ar.g.animate([{transform:"translateX(0)"},{transform:"translateX(-.08px)"},{transform:"translateX(.08px)"},{transform:"translateX(0)"}],{duration:280});
+  setTimeout(()=>setColor(ar,"#0f1b3d"),450);
+  if(lives<=0){busy=true;setTimeout(()=>show("💔 Game over","","Dobara try karo","Retry",start),500)}
+ }
+}
+function win(){
+ busy=true;const perfect=lives===3,L=lives,wasDaily=mode==="daily";
+ S.done++;if(perfect)S.perfect++;if(wasDaily)S.daily=today();else S.level++;save();
+ [523,659,784].forEach((f,i)=>setTimeout(()=>tone(f,.25),i*130));vib([30,50,30]);
+ const t=perfect?"Perfect! ✨":["Congratulations! 🎉","Great! 👏","Excellent! 🔥","Awesome! 🙌"][Math.floor(Math.random()*4)];
+ setTimeout(()=>{$("wm").textContent=t;$("ws").textContent="⭐".repeat(L)+"☆".repeat(3-L);mini($("mini"),orig,n);
+  $("wb").innerHTML=wasDaily?"Main par jao":"Next Game<small>Level "+S.level+"</small>";
+  $("wb").onclick=()=>{$("wn").style.display="none";if(wasDaily)go(0);else start()};
+  $("wh").onclick=()=>{$("wn").style.display="none";go(0)};
+  $("wn").style.display="flex";confetti()},600);
+}
+function confetti(){const o=$("wn"),c=["#1e88ff","#ffb300","#e53935","#43a047","#8e24aa"];
+ for(let i=0;i<36;i++){const s=document.createElement("i");s.className="cf";s.style.cssText="left:"+Math.random()*100+"%;background:"+c[i%5]+";animation-duration:"+(1.6+Math.random()*1.6)+"s;animation-delay:"+Math.random()*.4+"s";o.appendChild(s);setTimeout(()=>s.remove(),3800)}}
+function show(t,s,m,b,f){$("ot").textContent=t;$("os").textContent=s;$("om").textContent=m;$("ob").textContent=b;$("ob").onclick=()=>{$("ov").style.display="none";f()};$("ov").style.display="flex"}
+function mini(sv,list,nn){sv.innerHTML="";sv.setAttribute("viewBox","0 0 "+nn+" "+nn);
+ list.forEach(ar=>{const pts=ar.path.map(p=>(p[0]+.5)+","+(p[1]+.5)).join(" ");el("polyline",{points:pts,fill:"none",stroke:"#0f1b3d","stroke-width":.14,"stroke-linecap":"round","stroke-linejoin":"round"},sv);
+  const[hx,hy]=ar.path[ar.path.length-1],[dx,dy]=D[ar.dir],cx=hx+.5,cy=hy+.5,px=-dy,py=dx;
+  el("polygon",{points:[[cx+dx*.42,cy+dy*.42],[cx+dx*.02+px*.26,cy+dy*.02+py*.26],[cx+dx*.02-px*.26,cy+dy*.02-py*.26]].map(q=>q.join(",")).join(" "),fill:"#0f1b3d"},sv)})}
+$("hint").onclick=()=>{if(busy||hints<=0)return;const f=arrows.find(r=>isFree(r,arrows));if(!f)return;hints--;ui();setColor(f,"#1e88ff");setTimeout(()=>setColor(f,"#0f1b3d"),1200)};
+$("rl").onclick=()=>{S.grid=!S.grid;save();draw();ui()};$("gs").onclick=()=>page("settings");
+function go(i,play){
+ if(i===1&&S.daily===today()){show("📅 Daily done","⭐⭐⭐","Aaj ka daily puzzle ho chuka hai. Kal naya aayega!","OK",()=>{});return}
+ [0,1,2].forEach(k=>$("n"+k).classList.toggle("on",k===i));
+ const g=play||i===1;document.querySelector("nav").hidden=g;
+ $("hv").hidden=!(i===0&&!g);$("gv").hidden=!g;$("me").hidden=i!==2;
+ if(i===0&&!g)renderHome();
+ if(g){mode=i===1?"daily":"lvl";start()}
+}
+$("n0").onclick=()=>go(0);$("n1").onclick=()=>go(1);$("n2").onclick=()=>go(2);
+$("bk").onclick=()=>go(0);$("hp2").onclick=()=>go(0,true);$("pf").onclick=()=>page("name");
+const nm=()=>S.name||"Player";
+document.addEventListener("pointerdown",e=>{if(!(e.target.closest&&e.target.closest("#bd")))tone(820,.07)});
+function renderHome(){$("hg").textContent="Hi, "+nm()+" 👋";$("hp2").innerHTML="Next Game<small>Level "+S.level+"</small>";$("hs").textContent="🎮 "+S.done+" levels  •  🌟 "+S.perfect+" perfect"}
+function renderProf(){$("pf").innerHTML='<div class="av"></div><div style="flex:1"><b></b><br><small>Naam badalne ke liye tap karo</small></div><span>›</span>';$("pf").querySelector(".av").textContent=nm()[0].toUpperCase();$("pf").querySelector("b").textContent=nm()}
+function cp(){const i=$("lk"),fail=()=>{$("cm").textContent="Link select ho gaya hai. Ab upar jo Copy dikhe use dabao, ya link par long-press karo."};i.focus();i.select();i.setSelectionRange(0,999);let ok=false;try{ok=document.execCommand("copy")}catch(e){}
+ if(ok){$("cm").textContent="✅ Copy ho gaya!";return}
+ try{navigator.clipboard.writeText(i.value).then(()=>{$("cm").textContent="✅ Copy ho gaya!"},fail)}catch(e){fail()}}
+function sh(){try{navigator.share({title:"Arrow Puzzle",url:$("lk").value}).catch(()=>{})}catch(e){$("cm").textContent="Share yahan support nahi hai, Copy link use karo."}}
+function sn(){S.name=$("nm").value.replace(/[<>&"']/g,"").trim().slice(0,20);save();renderProf();renderHome();$("pg").style.display="none"}
+const P={
+ awards:()=>["Awards",`<p>🎮 Levels khele: <b>${S.done}</b><br>🌟 Perfect levels: <b>${S.perfect}</b><br>📈 Current level: <b>${S.level}</b></p><ul><li>${S.done>=1?"✅":"🔒"} Pehla level complete</li><li>${S.done>=10?"✅":"🔒"} 10 levels complete</li><li>${S.perfect>=5?"✅":"🔒"} 5 Perfect levels</li><li>${S.level>=20?"✅":"🔒"} Level 20 tak pahunchna</li><li>${S.daily?"✅":"🔒"} Daily Challenge jeetna</li></ul>`],
+ settings:()=>["Settings",`<p><button class="alt" onclick="tg('sound')">🔊 Sound: ${S.sound?"On":"Off"}</button></p><p><button class="alt" onclick="tg('vib')">📳 Vibration: ${S.vib?"On":"Off"}</button></p><p><button class="alt" onclick="tg('grid')">⚪ Grid dots: ${S.grid?"On":"Off"}</button></p>`],
+ help:()=>["Help",`<ul><li>Har arrow ka <b>sir (triangle)</b> jis taraf hai, wahi uski direction hai.</li><li>Arrow par tap karo. Agar uske aage koi doosra arrow nahi hai to wo bahar nikal jata hai.</li><li>Agar raasta band hai to ❤️ kam hoga. 3 galtiyon par game over.</li><li>💡 Hint se ek sahi arrow nila ho jata hai.</li><li>Sabhi arrows hatao to level complete.</li><li>Bina galti ke level = <b>Perfect!</b> ✨</li></ul>`],
+ about:()=>["About Game",`<h3>🏹 Arrow Puzzle</h3><p>Version 1.0.0<br>© 2026 Arrow Puzzle</p><p>Ek simple aur free brain-puzzle game. Koi ads nahi, koi login nahi.</p>`],
+ privacy:()=>["Privacy Policy",`<p><small>Last updated: 8 November 2026</small></p><p>Aapki privacy hamare liye important hai. Ye game ye cheezein <b>nahi</b> karta:</p><ul><li>Koi personal information (naam, phone, email, location) collect nahi karta.</li><li>Koi ads ya advertising ID use nahi karta.</li><li>Koi third-party tracker ya analytics nahi lagata.</li><li>Aapka data kisi ko share ya sell nahi karta.</li></ul><p><b>Jo data save hota hai:</b> sirf aapka level, score aur settings (sound/vibration). Ye data <b>sirf aapke apne phone/browser</b> mein save hota hai, hamare server par nahi jata.</p><p><b>Data delete karna:</b> Me → Privacy Preferences → “Mera data delete karo”.</p><p><b>Bachche:</b> Ye game sabhi umar ke liye safe hai aur bachchon se koi data nahi leta.</p><p><b>Sampark:</b> [apna email yahan likhein]</p><p>Is policy mein badlav hone par yahin update kiya jayega.</p>`],
+ terms:()=>["Terms of Service",`<p>Is game ko use karke aap ye shartein maante hain:</p><ul><li>Game sirf manoranjan ke liye hai aur “jaisa hai” ke roop mein diya gaya hai.</li><li>Game ka code, design aur naam developer ki property hain. Bina ijaazat copy ya resell na karein.</li><li>Hum kabhi bhi game mein badlav kar sakte hain.</li><li>Game use karne se hone wale kisi nuksan ki zimmedari developer ki nahi hogi.</li></ul>`],
+ share:()=>["Link copy / share",`<p>Ye link dusre ko bhejne ke liye:</p><input id="lk" readonly value="https://claude.ai/artifact/U4QyXEou7m9cWQTpBX7anZ" onfocus="this.select()" style="font:inherit;padding:12px;border-radius:12px;border:1px solid #cbd5e8;width:100%;box-sizing:border-box"><p><button onclick="cp()">📋 Copy link</button> <button class="alt" onclick="sh()">📤 Share</button></p><p id="cm" style="color:#1e6fe0"></p>`],
+ name:()=>["Apna naam",`<p>Aapka naam Main aur Me page par dikhega.</p><input id="nm" maxlength="20" placeholder="Naam likho" style="font:inherit;padding:12px;border-radius:12px;border:1px solid #cbd5e8;width:100%;box-sizing:border-box"><p><button onclick="sn()">Save</button></p>`],
+ pref:()=>["Privacy Preferences",`<p>🛡️ <b>Personalized Advertising: Off</b><br>Is game mein koi ads ya advertising ID nahi hai, isliye aapke device se koi advertising data share nahi hota.</p><p><button class="alt" onclick="wipe()" style="color:#e53935">🗑️ Mera data delete karo</button></p><p><small>Isse aapka level, awards aur settings hamesha ke liye hat jayenge.</small></p>`]
+};
+function page(k){const[t,h]=P[k]();$("pt").textContent=t;$("pb").innerHTML=h;if(k==="name")$("nm").value=S.name||"";$("pg").style.display="flex";$("pg").dataset.k=k}
+function tg(k){S[k]=!S[k];save();if(k==="grid"){draw();ui()}page($("pg").dataset.k)}
+let wp=0;function wipe(){if(!wp){wp=1;$("pb").querySelector("button").textContent="⚠️ Pakka? Dobara tap karo";return}wp=0;S={name:"",level:1,done:0,perfect:0,sound:true,vib:true,grid:true,daily:""};try{localStorage.removeItem("ap2")}catch(e){}page("pref");start()}
+$("pbk").onclick=()=>{$("pg").style.display="none"};
+document.querySelectorAll(".row").forEach(r=>r.onclick=()=>page(r.dataset.p));
+renderProf();renderHome();
+</script>
+</body>
+</html>
